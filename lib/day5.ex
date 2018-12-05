@@ -7,19 +7,35 @@ defmodule Aoc2018.Day5 do
 
   def b do
     p_i = parse_input()
+    cord = self()
     rej =
       Enum.reduce(65..90, %{},
         fn(i, acc) ->
-          Map.put_new(acc, i, Enum.reject(p_i, fn(x) -> x == i or x == i + 32 end))
+          spawn_link(
+            fn() ->
+              res =
+                p_i
+                |> Enum.reject(fn(x) -> x == i or x == i + 32 end)
+                |> reduce_polymers([])
+                |> length()
+              send(cord, {i, res})
+            end
+          )
+        Map.put_new(acc, i, 0)
         end
       )
+    rej |> loop(%{}) |> Enum.min()
 
-    Enum.map(rej,
-      fn({_id, el}) ->
-        length(reduce_polymers(el, []))
-      end
-    )
-    |> Enum.min()
+  end
+
+  def loop(await, acc) when map_size(await) == 0, do: acc
+
+  def loop(await, acc) do
+    receive do
+      {id, res} ->
+        {_, rem_await} = Map.pop(await, id)
+        loop(rem_await, Map.put_new(acc, id, res))
+    end
   end
 
   def reduce_polymers([], reduced), do: reduced
