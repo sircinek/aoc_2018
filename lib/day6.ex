@@ -36,9 +36,9 @@ defmodule Aoc2018.Day6 do
               List.delete(acc, to_pop)
             {^max_x, _} ->
               List.delete(acc, to_pop)
-            {^min_y, _} ->
+            {_, ^min_y} ->
               List.delete(acc, to_pop)
-            {^max_y, _} ->
+            {_, ^max_y} ->
               List.delete(acc, to_pop)
             {_, _} ->
               acc
