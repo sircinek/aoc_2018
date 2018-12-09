@@ -8,7 +8,7 @@ defmodule Aoc2018.Day9 do
 
     marbles
     |> reduce_marbles(players)
-    |> Enum.max()
+    |> Enum.max_by(fn({_k, v}) -> v end)
     |> elem(1)
   end
 
